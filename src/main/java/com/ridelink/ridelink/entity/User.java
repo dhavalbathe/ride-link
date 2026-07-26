@@ -2,6 +2,10 @@ package com.ridelink.ridelink.entity;
 
 import com.ridelink.ridelink.enums.Role;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -25,4 +29,11 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }
