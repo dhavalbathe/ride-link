@@ -2,13 +2,12 @@ package com.ridelink.ridelink.dto;
 
 import com.ridelink.ridelink.enums.Role;
 import jakarta.validation.constraints.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 
 @Data
-@Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserRegisterRequestDTO {
     @NotBlank(message = "Name is required")
     @Size(min = 2, max = 50, message = "Name must be between 3 and 50 characters")

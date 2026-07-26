@@ -2,6 +2,9 @@ package com.ridelink.ridelink.entity;
 
 import com.ridelink.ridelink.enums.Role;
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -9,6 +12,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
+@Builder
 public class User {
 
     @Id
