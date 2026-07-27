@@ -1,5 +1,7 @@
 package com.ridelink.ridelink.controller;
 
+import com.ridelink.ridelink.dto.UserLoginRequestDTO;
+import com.ridelink.ridelink.dto.UserLoginResponseDTO;
 import com.ridelink.ridelink.dto.UserRegisterRequestDTO;
 import com.ridelink.ridelink.dto.UserRegisterResponseDTO;
 import com.ridelink.ridelink.service.AuthService;
@@ -20,5 +22,10 @@ public class AuthController {
     public ResponseEntity<UserRegisterResponseDTO> registerUser(@RequestBody @Valid UserRegisterRequestDTO requestDTO) {
         UserRegisterResponseDTO response = authService.register(requestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserLoginResponseDTO> login(@RequestBody UserLoginRequestDTO request) {
+        return ResponseEntity.status(HttpStatus.OK).body(authService.login(request));
     }
 }

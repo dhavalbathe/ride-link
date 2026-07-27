@@ -1,0 +1,47 @@
+[33mcommit 969e11075e735a13f5ccddc5d8d6572a251c5c6f[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: dhavalbathe <dhavalbathe@gmail.com>
+Date:   Sun Jul 26 16:23:20 2026 +0530
+
+    fix: changes in controller and repository has done
+
+[33mcommit 21ec49aabaf976c9f2023bbe6000e0b5b5da9864[m
+Author: dhavalbathe <dhavalbathe@gmail.com>
+Date:   Sun Jul 26 16:22:41 2026 +0530
+
+    feat: created exception packages for smoothly handling exceptions
+
+[33mcommit 97014f2e93b7500547b550fe6774e31edd537bc9[m
+Author: dhavalbathe <dhavalbathe@gmail.com>
+Date:   Sun Jul 26 16:21:56 2026 +0530
+
+    feat: created register method for user
+
+[33mcommit 2c87508b40c6f771b51c5827959bae51c469eb1d[m
+Author: dhavalbathe <dhavalbathe@gmail.com>
+Date:   Sun Jul 26 10:06:24 2026 +0530
+
+    feat: created security config and disable default behaviour of spring security
+
+[33mcommit 02019669927c812a121c5f3f08d0a9d896f71f08[m
+Author: dhavalbathe <dhavalbathe@gmail.com>
+Date:   Sun Jul 26 09:55:33 2026 +0530
+
+    feat: created dto for registration of the user
+
+[33mcommit 12bd33de7552b57e057d6d4d7bd0138b2d298b47[m
+Author: dhavalbathe <dhavalbathe@gmail.com>
+Date:   Sun Jul 26 09:43:47 2026 +0530
+
+    feat: added two columns in user entity
+
+[33mcommit 43d6f3f4231cac75ef17967a4d106528ab453dfb[m
+Author: dhavalbathe <dhavalbathe@gmail.com>
+Date:   Sat Jul 25 16:16:57 2026 +0530
+
+    feat: User Entity created
+
+[33mcommit a0481ac9059930cc9b9a716ad28b1191ecb60aad[m
+Author: dhavalbathe <dhavalbathe@gmail.com>
+Date:   Sat Jul 25 15:47:01 2026 +0530
+
+    Initial Setup for RideLink Project Completed!
