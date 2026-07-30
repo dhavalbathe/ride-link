@@ -1,62 +1,156 @@
 package com.ridelink.ridelink.exception;
 
+import com.ridelink.ridelink.enums.ErrorCode;
 import com.ridelink.ridelink.exception.vehicleException.VehicleAlreadyExistsException;
 import com.ridelink.ridelink.exception.vehicleException.VehicleNotFoundException;
+import com.ridelink.ridelink.response.ApiErrorResponse;
+import com.ridelink.ridelink.response.ApiResponse;
+import com.ridelink.ridelink.response.ValidationErrorResponse;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     /* *************************************************************************
-    // Authentication Exceptions
+       Validation Exceptions
        **************************************************************************/
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationException(
+    public ResponseEntity<ValidationErrorResponse> handleValidationException(
             MethodArgumentNotValidException ex) {
 
         Map<String, String> errors = new HashMap<>();
 
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage()));
+        ex.getBindingResult()
+                .getFieldErrors()
+                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 
-        return ResponseEntity.badRequest().body(errors);
-    }
-
-    @ExceptionHandler(EmailAlreadyExists.class)
-    public ResponseEntity<String> handleEmailAlreadyExistsException(EmailAlreadyExists ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(PhoneAlreadyExists.class)
-    public ResponseEntity<String> handlePhoneAlreadyExistsException(PhoneAlreadyExists ex) {
-        return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<String> handleUsernameNotFoundException(UsernameNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        return ResponseEntity
+                .badRequest()
+                .body(
+                        ValidationErrorResponse.failure(
+                                "Validation failed.",
+                                ErrorCode.VALIDATION_FAILED,
+                                errors
+                        )
+                );
     }
 
     /* *************************************************************************
-    // Vehicle Exceptions
+       Authentication Exceptions
+       **************************************************************************/
+
+    @ExceptionHandler(EmailAlreadyExists.class)
+    public ResponseEntity<ApiErrorResponse> handleEmailAlreadyExistsException(
+            EmailAlreadyExists ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(
+                        ApiErrorResponse.failure(
+                                ex.getMessage(),
+                                ErrorCode.EMAIL_ALREADY_EXISTS
+                        )
+                );
+    }
+
+    @ExceptionHandler(PhoneAlreadyExists.class)
+    public ResponseEntity<ApiErrorResponse> handlePhoneAlreadyExistsException(
+            PhoneAlreadyExists ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(
+                        ApiErrorResponse.failure(
+                                ex.getMessage(),
+                                ErrorCode.PHONE_ALREADY_EXISTS
+                        )
+                );
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleUsernameNotFoundException(
+            UsernameNotFoundException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(
+                        ApiErrorResponse.failure(
+                                ex.getMessage(),
+                                ErrorCode.USER_NOT_FOUND
+                        )
+                );
+    }
+
+    /* *************************************************************************
+       Vehicle Exceptions
        **************************************************************************/
 
     @ExceptionHandler(VehicleNotFoundException.class)
-    public ResponseEntity<String> handleVehicleNotFoundException(VehicleNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<ApiErrorResponse> handleVehicleNotFoundException(
+            VehicleNotFoundException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(
+                        ApiErrorResponse.failure(
+                                ex.getMessage(),
+                                ErrorCode.VEHICLE_NOT_FOUND
+                        )
+                );
     }
 
     @ExceptionHandler(VehicleAlreadyExistsException.class)
-    public ResponseEntity<String> handleVehicleAlreadyExistsException(VehicleAlreadyExistsException ex) {
-        return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(ex.getMessage());
+    public ResponseEntity<ApiErrorResponse> handleVehicleAlreadyExistsException(
+            VehicleAlreadyExistsException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(
+                        ApiErrorResponse.failure(
+                                ex.getMessage(),
+                                ErrorCode.VEHICLE_ALREADY_EXISTS
+                        )
+                );
+    }
+
+    /* *************************************************************************
+       Generic Exception
+       **************************************************************************/
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiErrorResponse> handleGenericException(
+            Exception ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(
+                        ApiErrorResponse.failure(
+                                "Something went wrong. Please try again later.",
+                                ErrorCode.INTERNAL_SERVER_ERROR
+                        )
+                );
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiErrorResponse> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException ex
+    ) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(
+                        ApiErrorResponse.failure(
+                                "Invalid request body. Please check the request payload.",
+                                        ErrorCode.INVALID_REQUEST_BODY
+                        )
+                );
     }
 }
