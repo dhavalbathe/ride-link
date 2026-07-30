@@ -1,10 +1,7 @@
 package com.ridelink.ridelink.dto.vehicleDto;
 
 import com.ridelink.ridelink.enums.VehicleType;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Getter
@@ -15,6 +12,7 @@ import lombok.*;
 public class CreateVehicleRequestDTO {
 
     @NotBlank(message = "Vehicle number is required")
+    @Size(max = 10, message = "Vehicle number must not exceed 10 characters.")
     private String vehicleNumber;
 
     @NotNull(message = "Vehicle type is required")
