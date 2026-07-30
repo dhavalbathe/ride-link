@@ -1,0 +1,12 @@
+package com.ridelink.ridelink.enums;
+
+public enum ErrorCode {
+    VEHICLE_NOT_FOUND,
+    USER_NOT_FOUND,
+    EMAIL_ALREADY_EXISTS,
+    PHONE_ALREADY_EXISTS,
+    INVALID_CREDENTIALS,
+    ACCESS_DENIED,
+    VALIDATION_FAILED,
+    VEHIClE_ALREADY_EXISTS
+}
