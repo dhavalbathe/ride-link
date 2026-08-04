@@ -1,6 +1,9 @@
 package com.ridelink.ridelink.exception;
 
 import com.ridelink.ridelink.enums.ErrorCode;
+import com.ridelink.ridelink.exception.rideException.InvalidRideException;
+import com.ridelink.ridelink.exception.rideException.RideAlreadyExists;
+import com.ridelink.ridelink.exception.rideException.RideNotFoundException;
 import com.ridelink.ridelink.exception.vehicleException.VehicleAlreadyExistsException;
 import com.ridelink.ridelink.exception.vehicleException.VehicleNotFoundException;
 import com.ridelink.ridelink.response.ApiErrorResponse;
@@ -12,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
@@ -92,7 +96,7 @@ public class GlobalExceptionHandler {
     }
 
     /* *************************************************************************
-       Vehicle Exceptions
+       Vehicle Features Exceptions
        **************************************************************************/
 
     @ExceptionHandler(VehicleNotFoundException.class)
@@ -119,6 +123,43 @@ public class GlobalExceptionHandler {
                         ApiErrorResponse.failure(
                                 ex.getMessage(),
                                 ErrorCode.VEHICLE_ALREADY_EXISTS
+                        )
+                );
+    }
+
+        /* *************************************************************************
+       Ride Features Exception
+       **************************************************************************/
+
+    @ExceptionHandler(RideNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleRideNotFoundException(RideNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(
+                        ApiErrorResponse.failure(
+                                ex.getMessage(),
+                                ErrorCode.VEHICLE_NOT_FOUND
+                        )
+                );
+    }
+
+    @ExceptionHandler(RideAlreadyExists.class)
+    public ResponseEntity<ApiErrorResponse> handleRideAlreadyExists(RideAlreadyExists ex) {
+        return ResponseEntity.status(HttpStatus.ALREADY_REPORTED)
+                .body(
+                        ApiErrorResponse.failure(
+                                ex.getMessage(),
+                                ErrorCode.RIDE_ALREADY_EXISTS
+                        )
+                );
+    }
+
+    @ExceptionHandler(InvalidRideException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidRideException(InvalidRideException ex) {
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+                .body(
+                        ApiErrorResponse.failure(
+                                ex.getMessage(),
+                                ErrorCode.INVALID_RIDE
                         )
                 );
     }
@@ -150,6 +191,19 @@ public class GlobalExceptionHandler {
                         ApiErrorResponse.failure(
                                 "Invalid request body. Please check the request payload.",
                                         ErrorCode.INVALID_REQUEST_BODY
+                        )
+                );
+    }
+
+    @ExceptionHandler(ResourceAccessDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceAccessDeniedException(
+            ResourceAccessDeniedException ex
+    ) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(
+                        ApiErrorResponse.failure(
+                                ex.getMessage(),
+                                ErrorCode.ACCESS_DENIED
                         )
                 );
     }
