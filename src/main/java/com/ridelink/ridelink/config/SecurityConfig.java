@@ -33,7 +33,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/vehicles/**").hasRole("DRIVER")
+                        .requestMatchers("/vehicles/**", "/rides/**").hasRole("DRIVER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

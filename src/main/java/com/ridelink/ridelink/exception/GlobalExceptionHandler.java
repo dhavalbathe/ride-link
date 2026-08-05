@@ -144,7 +144,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RideAlreadyExists.class)
     public ResponseEntity<ApiErrorResponse> handleRideAlreadyExists(RideAlreadyExists ex) {
-        return ResponseEntity.status(HttpStatus.ALREADY_REPORTED)
+        return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(
                         ApiErrorResponse.failure(
                                 ex.getMessage(),
@@ -155,7 +155,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidRideException.class)
     public ResponseEntity<ApiErrorResponse> handleInvalidRideException(InvalidRideException ex) {
-        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(
                         ApiErrorResponse.failure(
                                 ex.getMessage(),

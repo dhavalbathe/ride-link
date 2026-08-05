@@ -114,21 +114,93 @@ public class RideServiceImpl implements RideService{
 
     @Override
     public List<RideResponseDTO> getMyRides() {
-        return null;
+        User driver = getAuthenticatedDriver();
+
+        return rideRepository.findByDriver(driver)
+                .stream()
+                .map(this::mapToResponseDTO)
+                .toList();
     }
 
     @Override
     public RideResponseDTO getRideById(Long rideId) {
-        return null;
+
+        User driver = getAuthenticatedDriver();
+
+        Ride ride = rideRepository.findById(rideId).orElseThrow(() -> new RideNotFoundException("Ride not found"));
+
+        if (!ride.getDriver().getId().equals(driver.getId())) {
+            throw new ResourceAccessDeniedException(
+                    "You are not authorized to access this ride."
+            );
+        }
+        return mapToResponseDTO(ride);
     }
 
     @Override
     public RideResponseDTO updateRide(Long rideId, UpdateRideRequestDTO request) {
-        return null;
+        User driver = getAuthenticatedDriver();
+
+        Ride ride = rideRepository.findById(rideId).orElseThrow(() -> new RideNotFoundException("Ride with this id not exists"));
+
+        if(!ride.getDriver().getId().equals(driver.getId())) {
+            throw new ResourceAccessDeniedException("You are not authorized to update this ride.");
+        }
+
+        if (request.getDepartureTime().isBefore(LocalDateTime.now())) {
+            throw new InvalidRideException(
+                    "Departure time must be in the future."
+            );
+        }
+
+        if (request.getEstimatedArrivalTime().isBefore(request.getDepartureTime())) {
+            throw new InvalidRideException(
+                    "Estimated arrival time must be after departure time."
+            );
+        }
+
+        if (request.getSource() != null) {
+            ride.setSource(request.getSource());
+        }
+
+        if (request.getDestination() != null) {
+            ride.setDestination(request.getDestination());
+        }
+
+        if (request.getPricePerSeat() != null) {
+            ride.setPricePerSeat(request.getPricePerSeat());
+        }
+
+        if(request.getDepartureTime() != null) {
+            ride.setDepartureTime(request.getDepartureTime());
+        }
+
+        if(request.getEstimatedArrivalTime() != null) {
+            ride.setEstimatedArrivalTime(request.getEstimatedArrivalTime());
+        }
+
+        if(request.getDescription() != null) {
+            ride.setDescription(request.getDescription());
+        }
+
+        Ride savedRide = rideRepository.save(ride);
+
+        return mapToResponseDTO(savedRide);
     }
 
     @Override
     public void deleteRide(Long rideId) {
 
+        User driver = getAuthenticatedDriver();
+
+        Ride ride = getRideByIdOrThrow(rideId);
+
+        if (!ride.getDriver().getId().equals(driver.getId())) {
+            throw new ResourceAccessDeniedException(
+                    "You are not authorized to delete this ride."
+            );
+        }
+
+        rideRepository.delete(ride);
     }
 }
