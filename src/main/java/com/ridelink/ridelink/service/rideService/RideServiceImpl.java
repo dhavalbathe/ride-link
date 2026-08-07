@@ -3,6 +3,8 @@ package com.ridelink.ridelink.service.rideService;
 import com.ridelink.ridelink.dto.rideDto.CreateRideRequestDTO;
 import com.ridelink.ridelink.dto.rideDto.RideResponseDTO;
 import com.ridelink.ridelink.dto.rideDto.UpdateRideRequestDTO;
+import com.ridelink.ridelink.dto.rideSearchDto.RideSearchRequestDTO;
+import com.ridelink.ridelink.dto.rideSearchDto.RideSearchResponseDTO;
 import com.ridelink.ridelink.entity.Ride;
 import com.ridelink.ridelink.entity.User;
 import com.ridelink.ridelink.entity.Vehicle;
@@ -22,7 +24,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -67,10 +71,32 @@ public class RideServiceImpl implements RideService{
                 .source(ride.getSource())
                 .destination(ride.getDestination())
                 .departureTime(ride.getDepartureTime())
+                .estimatedArrivalTime(ride.getEstimatedArrivalTime())
                 .availableSeats(ride.getAvailableSeats())
                 .pricePerSeat(ride.getPricePerSeat())
                 .driverName(ride.getDriver().getName())
+                .driverId(ride.getDriver().getId())
                 .vehicleNumber(ride.getVehicle().getVehicleNumber())
+                .vehicleId(ride.getVehicle().getId())
+                .vehicleModel(ride.getVehicle().getModel())
+                .status(ride.getStatus())
+                .description(ride.getDescription())
+                .createdAt(ride.getCreatedAt())
+                .updatedAt(ride.getUpdatedAt())
+                .build();
+    }
+
+    private RideSearchResponseDTO mapToRideSearchResponseDTO(Ride ride) {
+        return RideSearchResponseDTO.builder()
+                .rideId(ride.getId())
+                .driverName(ride.getDriver().getName())
+                .vehicleType(ride.getVehicle().getVehicleType())
+                .source(ride.getSource())
+                .destination(ride.getDestination())
+                .departureTime(ride.getDepartureTime())
+                .estimatedArrivalTime(ride.getEstimatedArrivalTime())
+                .pricePerSeat(ride.getPricePerSeat())
+                .availableSeats(ride.getAvailableSeats())
                 .build();
     }
 
@@ -81,6 +107,10 @@ public class RideServiceImpl implements RideService{
         User driver = getAuthenticatedDriver();
 
         Vehicle vehicle = vehicleRepository.findById(request.getVehicleId()).orElseThrow(() -> new VehicleNotFoundException("Vehicle Not found"));
+
+        if(!vehicle.getOwner().getId().equals(driver.getId())) {
+            throw new VehicleNotFoundException("Vehicle Not found with id " + request.getVehicleId());
+        }
 
         if(rideRepository.existsByDriverAndVehicleAndDepartureTime(driver, vehicle, request.getDepartureTime())) {
             throw new RideAlreadyExists("A ride already exists for the selected vehicle and departure time.");
@@ -202,5 +232,30 @@ public class RideServiceImpl implements RideService{
         }
 
         rideRepository.delete(ride);
+    }
+
+    @Override
+    public List<RideSearchResponseDTO> searchRides(RideSearchRequestDTO searchQuery) {
+        String source = searchQuery.getSource();
+        String destination = searchQuery.getDestination();
+        LocalDate date = searchQuery.getTravelDate();
+        Integer requiredSeats = searchQuery.getRequiredSeats();
+
+        if(source.equalsIgnoreCase(destination)) {
+            throw new InvalidRideException("Source and Destination cannot be the same.");
+        }
+
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+
+        List<Ride> rides = rideRepository.searchRides(source, destination, requiredSeats, startOfDay, endOfDay);
+
+        if(rides.isEmpty()) {
+            throw new RideNotFoundException("No Rides are available for you choice.");
+        }
+
+        return rides.stream()
+                .map(this::mapToRideSearchResponseDTO)
+                .toList();
     }
 }
