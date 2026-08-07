@@ -5,6 +5,8 @@ import com.ridelink.ridelink.entity.User;
 import com.ridelink.ridelink.entity.Vehicle;
 import com.ridelink.ridelink.enums.RideStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,5 +35,21 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
             User driver,
             Vehicle vehicle,
             LocalDateTime departureTime
+    );
+
+    @Query("""
+            SELECT r
+            FROM Ride r
+            WHERE LOWER(r.source) = LOWER(:source)
+            AND LOWER(r.destination) = LOWER(:destination)
+            AND r.availableSeats >= :requiredSeats
+            AND r.departureTime BETWEEN :startOfDay AND :endOfDay
+            """)
+    List<Ride> searchRides(
+            @Param("source") String source,
+            @Param("destination") String destination,
+            @Param("requiredSeats") Integer requiredSeats,
+            @Param("startOfDay") LocalDateTime startOfDay,
+            @Param("endOfDay") LocalDateTime endOfDay
     );
 }
