@@ -144,7 +144,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RideAlreadyExists.class)
     public ResponseEntity<ApiErrorResponse> handleRideAlreadyExists(RideAlreadyExists ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(
                         ApiErrorResponse.failure(
                                 ex.getMessage(),
@@ -171,6 +171,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleGenericException(
             Exception ex) {
+
+        System.out.println("Unhandled exception occurred: " + ex);
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
