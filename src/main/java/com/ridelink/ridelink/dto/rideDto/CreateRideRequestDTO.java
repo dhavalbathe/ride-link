@@ -17,7 +17,6 @@ public class CreateRideRequestDTO {
     @NotNull(message = "Vehicle id is required")
     private Long vehicleId;
 
-
     @NotBlank(message = "Source location is required")
     @Size(
             min = 3,
