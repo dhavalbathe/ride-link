@@ -3,6 +3,8 @@ package com.ridelink.ridelink.controller;
 import com.ridelink.ridelink.dto.rideDto.CreateRideRequestDTO;
 import com.ridelink.ridelink.dto.rideDto.RideResponseDTO;
 import com.ridelink.ridelink.dto.rideDto.UpdateRideRequestDTO;
+import com.ridelink.ridelink.dto.rideSearchDto.RideSearchRequestDTO;
+import com.ridelink.ridelink.dto.rideSearchDto.RideSearchResponseDTO;
 import com.ridelink.ridelink.response.ApiResponse;
 import com.ridelink.ridelink.service.rideService.RideService;
 import jakarta.validation.Valid;
@@ -20,6 +22,18 @@ public class RideController {
 
     private final RideService rideService;
 
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<RideSearchResponseDTO>>> getSearchRides(@ModelAttribute @Valid RideSearchRequestDTO searchQuery) {
+        List<RideSearchResponseDTO> response = rideService.searchRides(searchQuery);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(
+                        ApiResponse.success(
+                                "All the Rides of your choice are fetched.",
+                                    response
+                        )
+                );
+    }
+
     @PostMapping
     public ResponseEntity<ApiResponse<RideResponseDTO>> createRide(
             @RequestBody @Valid CreateRideRequestDTO request) {
@@ -34,7 +48,7 @@ public class RideController {
                 ));
     }
 
-    @GetMapping
+    @GetMapping("/my")
     public ResponseEntity<ApiResponse<List<RideResponseDTO>>> getMyRides() {
 
         List<RideResponseDTO> response = rideService.getMyRides();
